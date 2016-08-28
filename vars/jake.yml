@@ -1,0 +1,12 @@
+# => inherits: generic, linux <= #
+
+taskwarrior:
+  taskd:
+    server:      'freecinc.com:53589'
+    key_file:    'freecinc_3a4cb1da.key.pem'
+    cert_file:   'freecinc_3a4cb1da.cert.pem'
+    ca_file:     'freecinc_3a4cb1da.ca.pem'
+    credentials: '<{lpass TODO}>'
+  contexts:
+    uni: "+asw +isac +irs +mt"
+    work: "+work"

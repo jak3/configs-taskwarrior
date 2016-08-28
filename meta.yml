@@ -1,0 +1,9 @@
+elems:
+
+  - src: elems/(taskrc)$
+    dst: ~/.<1>
+    only:
+      features:
+        - taskwarrior
+
+# vim: set filetype=eruby.yaml :

@@ -1,0 +1,93 @@
+# ─────────────────────────────────────────────────────────────────────────────┐
+#                                                                              │
+# File informations:                                                           │
+# - Name:    elems/taskrc.tt                                                   │
+# - Summary: The taskwarrior configuration.                                    │
+# - Authors:                                                                   │
+#   - Alessandro Molari <molari.alessandro@gmail.com> (alem0lars)              │
+#   - Giacomo Mantani <github.com/jak3>                                        │
+#                                                                              │
+# Project informations:                                                        │
+#   - Homepage:        https://github.com/alem0lars/configs-taskwarrior        │
+#   - Getting started: see README.md in the project root folder                │
+#                                                                              │
+# License: Apache v2.0 (see below)                                             │
+#                                                                              │
+# ─────────────────────────────────────────────────────────────────────────────┤
+<% define_locals do
+  variable :"contexts", default: []
+
+  prefixed(:"taskwarrior.") do
+    variable :theme,    type: :file?, strict: true
+    variable :data_dir, type: :directory
+  end
+
+  prefixed(:"taskwarrior.taskd.", as: :taskd_, optional: true) do
+    variable :server,      type: :string
+    variable :credentials, type: :string
+    variable :key_file,    type: :string
+    variable :cert_file,   type: :string
+    variable :ca_file,     type: :string
+  end
+
+  if prefix? :taskd
+    computed(:taskd_key_file, type: :file, strict: true) do
+      local!(:data_dir).join(local!(:taskd_key_file))
+    end
+    computed(:taskd_cert_file, type: :file, strict: true) do
+      local!(:data_dir).join(local!(:taskd_cert_file))
+    end
+    computed(:taskd_ca_file, type: :file, strict: true) do
+      local!(:data_dir).join(local!(:taskd_ca_file))
+    end
+  end
+end -%>
+# ─────────────────────────────────────────────────────────────────────────────┘
+
+
+# ─────────────────────────────────────────────────────────────────────────────┐
+# Appearance ──────────────────────────────────────────────────────────────────┤
+
+# Set the color theme (if available).
+<% if local? :theme %>
+include <%= local! :theme %>
+<% end %>
+
+# Enable colors.
+color = on
+
+# ─────────────────────────────────────────────────────────────────────────────┤
+# Find ────────────────────────────────────────────────────────────────────────┤
+
+# Enable regex.
+regex = on
+
+# ─────────────────────────────────────────────────────────────────────────────┤
+# Editor ──────────────────────────────────────────────────────────────────────┤
+
+editor = <%= get_env! :EDITOR %>
+
+edit.verbose = on
+
+# ─────────────────────────────────────────────────────────────────────────────┤
+# Data ────────────────────────────────────────────────────────────────────────┤
+
+data.location = <%= local! :data_dir %>
+
+# ─────────────────────────────────────────────────────────────────────────────┤
+# Sync ────────────────────────────────────────────────────────────────────────┤
+
+<% if prefix? :taskd %>
+taskd.server=<%= local! :taskd_server %>
+taskd.key=<%= local!(:taskd_key_file).shell_escape %>
+taskd.certificate=<%= local!(:taskd_cert_file).shell_escape %>
+taskd.ca=<%= local!(:taskd_ca_file).shell_escape %>
+taskd.credentials=<%= local! :taskd_credentials %>
+<% end %>
+
+<% if local? :contexts %>
+<% local!(:contexts).each do |name, value| %>
+context.<%= name %>=<%= value %>
+<% end -%>
+<% end -%>
+# vim: set filetype=eruby.conf :
