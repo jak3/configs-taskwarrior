@@ -8,5 +8,4 @@ taskwarrior:
     ca_file:     'freecinc_3a4cb1da.ca.pem'
     credentials: '<{lpass TODO}>'
   contexts:
-    uni: "+asw +isac +irs +mt"
     work: "+work"
